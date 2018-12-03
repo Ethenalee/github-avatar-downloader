@@ -8,15 +8,19 @@ function getRepoContributors(repoOwner, repoName, cb) {
       'User-Agent': 'request',
       Authorization: 'token ' + key.GITHUB_TOKEN
     }
-
   };
 
-  request(options, function(err, res, body) {
+  request(options, function(err, res, raw) {
+    var body = JSON.parse(raw);
     cb(err, body);
   });
 }
 
 getRepoContributors("jquery", "jquery", function(err, result) {
-  console.log("Errors:", err);
-  console.log("Result:", result);
+  if(err) {
+    console.log("Errors: ", err);
+  }
+  for(var i = 0; i < result.length; i ++) {
+  console.log("Result: ", result[i].avatar_url);
+  }
 });
