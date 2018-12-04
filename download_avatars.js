@@ -1,5 +1,7 @@
+require('dotenv').config();
+
 var request = require('request');
-var key = require('./secrets');
+var key = process.env.GITHUB_TOKEN;
 var fs = require('fs');
 var owner = process.argv[2];
 var repo = process.argv[3];
@@ -10,7 +12,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
     headers: {
       'User-Agent': 'request',
-      Authorization: 'token ' + key.GITHUB_TOKEN
+      Authorization: 'token ' + key
     }
   };
   if(repoOwner === undefined || repoName === undefined) {
