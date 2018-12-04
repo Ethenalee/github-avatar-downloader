@@ -13,11 +13,9 @@ function getRepoContributors(repoOwner, repoName, cb) {
       Authorization: 'token ' + key.GITHUB_TOKEN
     }
   };
-
   if(repoOwner === undefined || repoName === undefined) {
     return console.log("Errors: argument is missing");
   }
-
   request(options, function(err, res, raw) {
     var body = JSON.parse(raw);
     cb(err, body);
@@ -50,7 +48,7 @@ getRepoContributors(owner, repo, cb2);
 
 function downloadImageByURL(url, filePath) {
   request.get(url)
-       .pipe(fs.createWriteStream(filePath))
+         .pipe(fs.createWriteStream(filePath))
 
 }
 
