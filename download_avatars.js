@@ -1,6 +1,8 @@
 var request = require('request');
 var key = require('./secrets');
 var fs = require('fs');
+var owner = process.argv[2];
+var repo = process.argv[3];
 
 function getRepoContributors(repoOwner, repoName, cb) {
   var options = {
@@ -11,13 +13,17 @@ function getRepoContributors(repoOwner, repoName, cb) {
     }
   };
 
+  if(repoOwner === undefined || repoName === undefined) {
+    return console.log("Errors: argument is missing");
+  }
+
   request(options, function(err, res, raw) {
     var body = JSON.parse(raw);
     cb(err, body);
   });
 }
 
-var cb = function(err, result) {
+var cab = function(err, result) {
   if(err) {
     console.log("Errors: ", err);
   }
@@ -28,13 +34,15 @@ var cb = function(err, result) {
 
 
 var cb2 = function(err, result) {
-  var url = [];
+  if(err) {
+    console.log("Errors: ", err);
+  }
   for(var i = 0; i < result.length; i ++) {
    downloadImageByURL(result[i].avatar_url, './avatars/' + result[i].login + '.png');
   }
 }
 
-getRepoContributors("jquery", "jquery", cb2);
+getRepoContributors(owner, repo, cb2);
 
 
 
