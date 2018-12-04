@@ -4,6 +4,7 @@ var fs = require('fs');
 var owner = process.argv[2];
 var repo = process.argv[3];
 
+// get API
 function getRepoContributors(repoOwner, repoName, cb) {
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
@@ -23,6 +24,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
+// print avatar url
 var cab = function(err, result) {
   if(err) {
     console.log("Errors: ", err);
@@ -32,7 +34,7 @@ var cab = function(err, result) {
   }
 };
 
-
+// save image in avatars folder
 var cb2 = function(err, result) {
   if(err) {
     console.log("Errors: ", err);
