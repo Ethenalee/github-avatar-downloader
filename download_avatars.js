@@ -18,17 +18,20 @@ function getRepoContributors(repoOwner, repoName, cb) {
     }
   };
 
+  if(arguments.length !== 3) {
+    return console.log('Errors: incorrect number of arguments given')
+  }
+
   if(!fs.existsSync('.env')) {
     return console.log('Errors: .env is missing');
   }
 
-  if(!fs.existsSync(key) && key !== undefined) {
-    return console.log('Errors: .env info is wrong');
-  }
-
-  if(!fs.existsSync(key) && key === undefined) {
-    return console.log('Errors: .env info is missing')
-  }
+  // if(!fs.existsSync(key)) {
+  //   if(!key) {
+  //     return console.log('Errors: .env info is missing');
+  //   }
+  //   return console.log('Errors: .env info is wrong');
+  // }
 
   if(!fs.existsSync(options.url)) {
     return console.log('Errors: url is missing');
@@ -38,10 +41,12 @@ function getRepoContributors(repoOwner, repoName, cb) {
   //   console.log('Errors', )
   // }
 
-  request(options, function(err, res, raw) {
-    var body = JSON.parse(raw);
-    cb(err, body);
-  });
+  else {
+    request(options, function(err, res, raw) {
+      var body = JSON.parse(raw);
+      cb(err, body);
+    });
+  }
 }
 
 // print avatar url
