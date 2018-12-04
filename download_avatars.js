@@ -18,11 +18,17 @@ function getRepoContributors(repoOwner, repoName, cb) {
     }
   };
 
-  if(!fs.existsSync(key)) {
+  if(!fs.existsSync('.env')) {
     return console.log('Errors: .env is missing');
   }
 
-  if(!fs.)
+  if(!fs.existsSync(key) && key !== undefined) {
+    return console.log('Errors: .env info is wrong');
+  }
+
+  if(!fs.existsSync(key) && key === undefined) {
+    return console.log('Errors: .env info is missing')
+  }
 
   if(!fs.existsSync(options.url)) {
     return console.log('Errors: url is missing');
