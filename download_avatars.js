@@ -2,6 +2,7 @@ console.log('Running file');
 require('dotenv').config();
 
 var request = require('request');
+var urlExists = require('url-exists');
 var key = process.env.GITHUB_TOKEN;
 var fs = require('fs');
 var owner = process.argv[2];
@@ -26,38 +27,42 @@ function getRepoContributors(repoOwner, repoName, cb) {
     return console.log('Errors: .env is missing');
   }
 
-  // if(!fs.existsSync(key)) {
-  //   if(!key) {
-  //     return console.log('Errors: .env info is missing');
-  //   }
-  //   return console.log('Errors: .env info is wrong');
-  // }
 
-  if(!fs.existsSync(options.url)) {
-    return console.log('Errors: url is missing');
-  }
 
-  // if(!response || response != 200) {
-  //   console.log('Errors', )
-  // }
-
-  else {
     request(options, function(err, res, raw) {
-      var body = JSON.parse(raw);
-      cb(err, body);
+
+      if(err === null && res.statusCode === 200) {
+        var body = JSON.parse(raw);
+        cb(err, body);
+      }
+      else if(res.statusCode === 404) {
+        console.log('Invalid url');
+      }
+      else if(res.statusCode === 401) {
+        const stats = fs.statSync('.env');
+        const size = stats.size
+        if(size === 0) {
+          console.log('Key info is missing');
+        }
+        else {
+        console.log('Invalid key');
+        }
+      }
+
+
     });
-  }
+
 }
 
 // print avatar url
-var cb1 = function(err, result) {
-  if(err) {
-    console.log('Errors: ', err);
-  }
-  for(var i = 0; i < result.length; i ++) {
-  console.log('Result: ', result[i].avatar_url);
-  }
-};
+// var cb1 = function(err, result) {
+//   if(err) {
+//     console.log('Errors: ', err);
+//   }
+//   for(var i = 0; i < result.length; i ++) {
+//   console.log('Result: ', result[i].avatar_url);
+//   }
+// };
 
 // save image in avatars folder
 var cb2 = function(err, result) {
@@ -72,6 +77,7 @@ var cb2 = function(err, result) {
   for(var i = 0; i < result.length; i ++) {
    downloadImageByURL(result[i].avatar_url, filepath + result[i].login + '.png');
   }
+
 }
 
 getRepoContributors(owner, repo, cb2);
