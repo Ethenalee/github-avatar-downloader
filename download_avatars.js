@@ -1,17 +1,18 @@
 console.log('Running file');
 require('dotenv').config();
 
-var request = require('request');
-var urlExists = require('url-exists');
-var key = process.env.GITHUB_TOKEN;
-var fs = require('fs');
-var owner = process.argv[2];
-var repo = process.argv[3];
-var filepath = './avatars/';
+let request = require('request');
+let async = require('async');
+let fetch = require('node-fetch');
+let key = process.env.GITHUB_TOKEN;
+let fs = require('fs');
+let owner = process.argv[2];
+let repo = process.argv[3];
+let filepath = './avatars/';
 
 // get API
 function getRepoContributors(repoOwner, repoName, cb) {
-  var options = {
+  let options = {
     url: 'https://api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors',
     headers: {
       'User-Agent': 'request',
@@ -32,7 +33,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
     request(options, function(err, res, raw) {
 
       if(err === null && res.statusCode === 200) {
-        var body = JSON.parse(raw);
+        let body = JSON.parse(raw);
         cb(err, body);
       }
       else if(res.statusCode === 404) {
@@ -54,18 +55,63 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
 }
 
+function downloadImageByURL(url, filePath) {
+
+  request.get(url)
+         .pipe(fs.createWriteStream(filePath))
+
+}
+
+var arr = [];
+
+let starred = function(err, result) {
+  if(err) {
+    console.log('Errors: ', err);
+  }
+
+  for (let i = 0; i < result.length; i ++) {
+        var login = result[i].login;
+        var url = `https://api.github.com/users/${login}/starred`;
+        var headers = { 'User-Agent': 'request', Authorization: 'token ' + key};
+
+  const getData = async (url, headers) => {
+    try {
+      const response = await fetch(url, {headers: headers});
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  var run = async () => {
+    var result = await getData(url, headers);
+    var starredurlname = [];
+    for (let j = 0; j < result.length; j ++) {
+      starredurlname.push(result[j].full_name);
+    }
+    return starredurlname;
+  };
+arr = arr.concat(run().then((arr) => console.info(arr)));
+};
+console.log(arr);
+}
+
+
+
 // print avatar url
-// var cb1 = function(err, result) {
+// let cb1 = function(err, result) {
 //   if(err) {
 //     console.log('Errors: ', err);
 //   }
-//   for(var i = 0; i < result.length; i ++) {
+//   for(let i = 0; i < result.length; i ++) {
 //   console.log('Result: ', result[i].avatar_url);
 //   }
 // };
 
+
 // save image in avatars folder
-var cb2 = function(err, result) {
+let cb2 = function(err, result) {
   if(err) {
     console.log('Errors: ', err);
   }
@@ -74,22 +120,16 @@ var cb2 = function(err, result) {
     return console.log('Errors: filePath is missing');
   }
 
-  for(var i = 0; i < result.length; i ++) {
+  for(let i = 0; i < result.length; i ++) {
    downloadImageByURL(result[i].avatar_url, filepath + result[i].login + '.png');
   }
 
 }
 
-getRepoContributors(owner, repo, cb2);
+getRepoContributors(owner, repo, starred);
 
 
 
-function downloadImageByURL(url, filePath) {
-
-  request.get(url)
-         .pipe(fs.createWriteStream(filePath))
-
-}
 
 
 
