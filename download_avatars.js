@@ -62,40 +62,6 @@ function downloadImageByURL(url, filePath) {
 
 }
 
-var arr = [];
-
-let starred = function(err, result) {
-  if(err) {
-    console.log('Errors: ', err);
-  }
-
-  for (let i = 0; i < result.length; i ++) {
-        var login = result[i].login;
-        var url = `https://api.github.com/users/${login}/starred`;
-        var headers = { 'User-Agent': 'request', Authorization: 'token ' + key};
-
-  const getData = async (url, headers) => {
-    try {
-      const response = await fetch(url, {headers: headers});
-      const json = await response.json();
-      return json;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  var run = async () => {
-    var result = await getData(url, headers);
-    var starredurlname = [];
-    for (let j = 0; j < result.length; j ++) {
-      starredurlname.push(result[j].full_name);
-    }
-    return starredurlname;
-  };
-arr = arr.concat(run().then((arr) => console.info(arr)));
-};
-console.log(arr);
-}
 
 
 
@@ -126,8 +92,7 @@ let cb2 = function(err, result) {
 
 }
 
-getRepoContributors(owner, repo, starred);
-
+getRepoContributors(owner, repo, cb2);
 
 
 
