@@ -20,20 +20,15 @@ function getRepoContributors(repoOwner, repoName) {
     }
   };
 
-
   return new Promise(function (resolve, reject) {
-
   if(!repoOwner || !repoName) {
     return reject('Errors: incorrect number of arguments given')
   }
-
   if(!fs.existsSync('.env')) {
     return reject('Errors: .env is missing');
   }
 
-
     request(options, function(err, res, raw) {
-
       if(err === null && res.statusCode === 200) {
         let body = JSON.parse(raw);
         resolve(body.map( x => x.login));
@@ -54,31 +49,16 @@ function getRepoContributors(repoOwner, repoName) {
       });
 
   })
-
-
-
-
-
-}
-
-function downloadImageByURL(url, filePath) {
-
-  request.get(url)
-         .pipe(fs.createWriteStream(filePath))
-
 }
 
 
-
+//all starred url find
 let starred = async function(usernames) {
-
   var arr = [];
-
   for (let i = 0; i < usernames.length; i ++) {
     var login = usernames[i];
     var url = `https://api.github.com/users/${login}/starred`;
     var headers = { 'User-Agent': 'request', Authorization: 'token ' + key};
-
     const getData = async (url, headers) => {
       try {
         const response = await fetch(url, {headers: headers});
@@ -88,52 +68,33 @@ let starred = async function(usernames) {
         console.log(error);
       }
     };
-
     var result = await getData(url, headers);
-
     for (let j = 0; j < result.length; j ++) {
       arr.push(result[j].full_name);
     }
   }
-
   return arr;
 }
 
 
-
-// print avatar url
-// let cb1 = function(err, result) {
-//   if(err) {
-//     console.log('Errors: ', err);
-//   }
-//   for(let i = 0; i < result.length; i ++) {
-//   console.log('Result: ', result[i].avatar_url);
-//   }
-// };
-
-
-// save image in avatars folder
-// let cb2 = function(err, result) {
-//   if(err) {
-//     console.log('Errors: ', err);
-//   }
-
-//   if(!fs.existsSync(filepath)) {
-//     return console.log('Errors: filePath is missing');
-//   }
-
-//   for(let i = 0; i < result.length; i ++) {
-//    downloadImageByURL(result[i].avatar_url, filepath + result[i].login + '.png');
-//   }
-
-// }
-
 getRepoContributors(owner, repo)
-  .then((usernames) => { console.info(usernames)
+  .then((usernames) => {
+    // console.info(usernames)
     return starred(usernames)
   })
-  .then((fullnames) => { console.info(fullnames)
-
+  .then((fullnames) => {
+    // console.info(fullnames)
+    var tmp = {}, tops = [];
+    // Create object with count of occurances of each array element
+    fullnames.forEach(function(item) {
+        tmp[item] = tmp[item] ? tmp[item]+1 : 1;
+    });
+    // Create an array of the sorted object properties
+    tops = Object.keys(tmp).sort(function(a, b) { return tmp[b] - tmp[a] });
+    // Print top 5 starred url
+    for (let i = 0; i < 5; i ++){
+    console.info(`[${tmp[tops[i]]} stars]`, tops[i]);
+    }
   })
   .catch((erros) => console.info(erros))
 

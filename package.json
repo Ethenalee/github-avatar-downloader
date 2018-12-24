@@ -2,7 +2,7 @@
   "name": "getavatar",
   "version": "1.0.0",
   "description": "## Problem Statement",
-  "main": "index.js",
+  "main": "download_avatars.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/Ethenalee/github-avatar-downloader#readme",
   "dependencies": {
-    "request": "^2.88.0"
+    "async": "^2.6.1",
+    "dotenv": "^6.1.0",
+    "node-fetch": "^2.3.0",
+    "request": "^2.88.0",
+    "url-exists": "^1.0.3"
   }
 }
